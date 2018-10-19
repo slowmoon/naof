@@ -3,6 +3,8 @@ package com.yipin.project.web
 import com.fangjs.commons.core.exception.BusinessException
 import com.fangjs.commons.core.util.BusinessExceptionUtils
 import com.yipin.commons.utils.AccessWay
+import com.yipin.commons.utils.exception.BaseException
+import com.yipin.commons.utils.file.BaseUtils
 import com.yipin.project.domain.order.Order
 import com.yipin.project.service.acquire.AcquireService
 import com.yipin.project.service.verifyService.VerifyService
@@ -40,15 +42,13 @@ class AcquireController{
         logger.info(s"receive order [$receiptMap]")
         if (!verifyService.verify(receiptMap)) {
            logger.error(s"receipt order [$receiptMap] verify sign error!")
-          throw new BusinessException("")
+          throw new BusinessException("com.yipin.application.007")
         }
          f(receiptMap)
       }catch {
-        case e:BusinessException=>  e.printStackTrace()
-
+        case e:BaseException=>  e.printStackTrace()
           logger.error(s"receive order [$receiptMap] got business error [${e.getMessage}]")
-            val codeMessage = BusinessExceptionUtils.getBusinessInfo(e.getMessage).split("|",2)
-            Map("code"->codeMessage(0) , "message"-> codeMessage(1))
+            Map("code"->e.getCode , "message"-> BaseUtils.getResult(e))
         case e:Exception =>   e.printStackTrace()
           logger.error(s"receive order [$receiptMap] got system error [${e.getMessage}]")
            Map("code"->"999", "message"->"系统异常")

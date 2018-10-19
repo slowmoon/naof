@@ -36,7 +36,7 @@ class VerifyServiceImpl extends VerifyService{
      val ap =applicationRpt.findByAppid(ac.appid)
      val key = ap.getContract.getSecretKey
      if(key==null) throw new BusinessException("com.yipin.application.006")
-     if(!sign(param, key).equals(ac.sign))return true else false
+     if(sign(param, key).equals(ac.sign))return true else false
   }
 
   override def sign(param: Map[String, String], secretKey: SecretKey): String = {
